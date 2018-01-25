@@ -28,3 +28,18 @@ test('should return a rejected promise when something goes wrong', t => {
     t.pass('promised-jsonp has dealt a wrong url with a rejected promise')
   })
 })
+
+test('could also recieve an object as the only param', t => {
+  t.plan(1)
+  var params = {
+    ping: 'pong'
+  }
+  var queries = qs.encode(params)
+
+  jsonp({
+    url: dest + '?' + queries,
+    prefix: '__jp'
+  }).then(data => {
+    t.deepEqual(data, params)
+  })
+})

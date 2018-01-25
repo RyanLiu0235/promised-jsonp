@@ -3,7 +3,6 @@
  *
  * options
  * 	-	url
- * 	-	data	{Object|String}
  * 	-	prefix	{String}
  */
 
