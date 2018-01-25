@@ -1,3 +1,12 @@
+/**
+ * promised-jsonp
+ *
+ * options
+ * 	-	url
+ * 	-	data	{Object|String}
+ * 	-	prefix	{String}
+ */
+
 var id = 0
 var noop = function() {}
 
@@ -19,7 +28,8 @@ module.exports = function(url, options) {
     }
     var script = document.createElement('script')
     script.src = url
-    script.error = function(err) {
+
+    script.onerror = function(err) {
       reject(err)
     }
     document.head.appendChild(script)

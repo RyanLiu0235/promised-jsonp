@@ -6,7 +6,7 @@ var qs = require('querystring')
 var dest = 'http://jsfiddle.net/echo/jsonp'
 
 test('basic usage of promised-jsonp', t => {
-	t.plan(1)
+  t.plan(1)
   var params = {
     ping: 'pong'
   }
@@ -14,5 +14,17 @@ test('basic usage of promised-jsonp', t => {
 
   jsonp(dest + '?' + queries).then(data => {
     t.deepEqual(data, params)
+  })
+})
+
+test('should return a rejected promise when something goes wrong', t => {
+  t.plan(1)
+  var params = {
+    ping: 'pong'
+  }
+  var queries = qs.encode(params)
+
+  jsonp(dest + '/ghost' + '?' + queries).catch(() => {
+    t.pass('promised-jsonp has dealt a wrong url with a rejected promise')
   })
 })
