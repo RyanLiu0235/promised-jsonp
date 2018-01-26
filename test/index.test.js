@@ -37,8 +37,26 @@ test('could also receive an object as the only param', t => {
   jsonp({
     url: dest,
     data: params,
-    prefix: '__jp'
+    prefix: '__jp',
+    callbackName: 'callback',
+    timeout: 2
   }).then(data => {
     t.deepEqual(data, params)
+  }, err => {
+    t.pass()
+  })
+})
+
+test('throw an error when timeout', t => {
+  t.plan(1)
+  var params = {
+    ping: 'pong'
+  }
+  jsonp({
+    url: dest,
+    data: params,
+    timeout: 2 // assume that 2ms is far more than enough for a request to be fully answered
+  }).catch(err => {
+    t.pass('received error when timeout, 2ms is given.')
   })
 })

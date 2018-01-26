@@ -2,9 +2,11 @@
  * promised-jsonp
  *
  * options
- *  - url
- *  - prefix  {String}
- *  - data    {Object}
+ *  - url             {String}
+ *  - prefix          {String}
+ *  - data            {Object}
+ *  - callbackName    {String}
+ *  - timeout         {Number}
  */
 
 var id = 0
@@ -16,24 +18,37 @@ module.exports = function(url, options) {
     options = url
     url = options.url
   }
+  var prefix = options.prefix || '__jsonp'
+  var callback = prefix + id++
+  var param = (options.callbackName || 'callback')
+  var timeout = options.timeout !== undefined ? options.timeout : 60000
+
+  url += (url.indexOf('?') === -1 ? '?' : '&') + param + '=' + callback
+
+  var data = options.data
+  if (typeof data === 'object') {
+    var keys = Object.keys(data)
+    var len = keys.length
+
+    while (len--) {
+      url += '&' + keys[len] + '=' + data[keys[len]]
+    }
+  }
 
   return new Promise(function(resolve, reject) {
-    var callbackName = (options.prefix || '__jsonp') + id++
-    url += (url.indexOf('?') === -1 ? '?' : '&') + 'callback=' + callbackName
-
-    var data = options.data
-    if (typeof data === 'object') {
-      var keys = Object.keys(data)
-      var len = keys.length
-
-      while (len--) {
-        url += '&' + keys[len] + '=' + data[keys[len]]
-      }
+    function clear() {
+      document.head.removeChild(script)
+      window[callback] = noop
     }
 
-    window[callbackName] = function(data) {
-      document.head.removeChild(script)
-      window[callbackName] = noop
+    if (timeout) {
+      setTimeout(function() {
+        clear()
+        reject(new Error('timeout'))
+      }, timeout)
+    }
+    window[callback] = function(data) {
+      clear()
       resolve(data)
     }
     var script = document.createElement('script')
