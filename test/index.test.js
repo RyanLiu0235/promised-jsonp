@@ -3,7 +3,7 @@ var test = require('tape')
 var qs = require('querystring')
 
 // http://doc.jsfiddle.net/use/echo.html#jsonp
-var dest = 'http://jsfiddle.net/echo/jsonp'
+var dest = 'http://jsfiddle.net/echo/jsonp/'
 
 test('basic usage of promised-jsonp', t => {
   t.plan(1)
@@ -34,10 +34,9 @@ test('could also recieve an object as the only param', t => {
   var params = {
     ping: 'pong'
   }
-  var queries = qs.encode(params)
-
   jsonp({
-    url: dest + '?' + queries,
+    url: dest,
+    data: params,
     prefix: '__jp'
   }).then(data => {
     t.deepEqual(data, params)
